@@ -28,7 +28,7 @@ const iso = (d) => { const [dia, , mes, , ano] = d.split(' '); return `${ano}-${
 const limpo = (s) => String(s).replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
 const abs = (p) => SITE + p;
 let FAQS = [], CRUMBS = [];
-const ldNegocio = () => ({ '@context': 'https://schema.org', '@type': NEGOCIO.tipo, '@id': abs('/#negocio'), name: NEGOCIO.nome, url: abs('/'), image: abs('/img/recepcao.webp'), telephone: NEGOCIO.telefone, priceRange: NEGOCIO.preco,
+const ldNegocio = () => ({ hasMap: `https://www.google.com/maps?q=${NEGOCIO.lat},${NEGOCIO.lng}`, '@context': 'https://schema.org', '@type': NEGOCIO.tipo, '@id': abs('/#negocio'), name: NEGOCIO.nome, url: abs('/'), image: abs('/img/recepcao.webp'), telephone: NEGOCIO.telefone, priceRange: NEGOCIO.preco,
   address: { '@type': 'PostalAddress', streetAddress: NEGOCIO.rua, addressLocality: NEGOCIO.cidade, addressRegion: NEGOCIO.uf, postalCode: NEGOCIO.cep, addressCountry: 'BR' },
   geo: { '@type': 'GeoCoordinates', latitude: NEGOCIO.lat, longitude: NEGOCIO.lng }, areaServed: NEGOCIO.cidade,
   openingHoursSpecification: NEGOCIO.horario.map(([d, o, c]) => ({ '@type': 'OpeningHoursSpecification', dayOfWeek: d, opens: o, closes: c })),
@@ -338,7 +338,7 @@ ${phero([['/', 'Início'], ['', 'Contato']], ['Vamos <em>conversar?</em>'], 'Pre
 <div class='msg' id='saida' hidden></div>
 </form>
 </div>
-<div class='place' data-r><div class='media'>${img('recepcao', 'Recepção da Orla', `loading='lazy'`)}</div><div class='pin'><h3>Orla Odontologia</h3><p class='muted'>Av. das Marés, 1.450, 5º andar. Endereço fictício, usado apenas nesta demonstração.</p></div></div>
+<div class='place' data-r><div class='media map'><iframe title='Mapa com a localização da ${NEGOCIO.nome}' src='https://www.google.com/maps?q=${NEGOCIO.lat},${NEGOCIO.lng}&z=16&hl=pt-BR&output=embed' loading='lazy' referrerpolicy='no-referrer-when-downgrade' allowfullscreen></iframe></div><div class='pin'><h3>Orla Odontologia</h3><p class='muted'>Av. das Marés, 1.450, 5º andar. Endereço fictício, usado apenas nesta demonstração.</p><a class='link' style='margin-top:12px' href='https://www.google.com/maps/dir/?api=1&destination=${NEGOCIO.lat},${NEGOCIO.lng}' target='_blank' rel='noopener'>Traçar rota <span>↗</span></a></div></div>
 </div></section>
 <section style='padding-top:0'><div class='wrap split'><div><span class='tag plain' data-r>Antes de agendar</span><h2 data-r>Dúvidas <em>comuns.</em></h2></div><div data-r>${faq([['Quanto custa a avaliação?', 'A primeira avaliação é gratuita e inclui exame clínico e fotos. Se o caso pedir tomografia, ela é feita na clínica e o valor é abatido do tratamento.'], ['Quais as formas de pagamento?', 'Pix, débito, cartão de crédito em até 12 vezes sem juros e financiamento próprio para reabilitações.'], ['Atendem urgências?', 'Sim. Pacientes em tratamento têm atendimento de urgência por WhatsApp, inclusive aos domingos.'], ['Preciso levar exames?', 'Se você tiver radiografias ou tomografias recentes, traga. Se não tiver, fazemos o que for necessário aqui.']])}</div></div></section>` });
 
