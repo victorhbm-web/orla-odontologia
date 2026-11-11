@@ -117,7 +117,7 @@ const layout = ({ title, desc, path, body }) => `<!doctype html>
 <a class='logo' href='/' aria-label='Orla Odontologia'>${LOGO}<span>Orla <small>odontologia</small></span></a>
 <nav class='nav' aria-label='Principal'>${NAV.map(([h, t]) => `<a href='${h}'${(h === '/' ? path === '/' : path.startsWith(h)) ? ` class='on' aria-current='page'` : ''}>${t}</a>`).join('')}</nav>
 ${btn('/contato', 'Agendar avaliação')}
-<button class='burger' aria-label='Abrir menu' aria-expanded='false'></button>
+<button class='burger' aria-label='Abrir menu' aria-expanded='false'><b>Menu</b><i></i></button>
 </div></header>
 <div class='menu'>${NAV.map(([h, t], i) => `<a href='${h}' style='--i:${i}'>${t}</a>`).join('')}<p>Av. das Marés, 1.450, Barra Nova, Rio de Janeiro<br>Seg a sex 8h às 19h · Sáb 9h às 14h</p></div>
 <main>${body}</main>
