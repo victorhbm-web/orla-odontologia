@@ -3,6 +3,37 @@ import sharp from 'sharp';
 
 const OUT = 'dist';
 const WA = '5521000000000';
+
+/* ---------- SEO ----------
+   INDEXAR: deixe false em demonstração (o site fica fora do Google).
+   Em site de cliente real, troque para true (ou defina INDEXAR=1 na Vercel)
+   e preencha SITE com o domínio final e NEGOCIO com os dados reais. */
+const INDEXAR = process.env.INDEXAR === '1' || false;
+const SITE = (process.env.SITE_URL || 'https://orla-odontologia.vercel.app').replace(/\/$/, '');
+const NEGOCIO = {
+  tipo: 'Dentist', nome: 'Orla Odontologia', telefone: '+55 21 0000-0000', preco: '$$',
+  rua: 'Av. das Marés, 1.450', bairro: 'Barra Nova', cidade: 'Rio de Janeiro', uf: 'RJ', cep: '22600-000',
+  lat: -23.0004, lng: -43.3659,
+  horario: [[['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'], '08:00', '19:00'], [['Saturday'], '09:00', '14:00']],
+  redes: []
+};
+const ALT = {
+  hero: 'Paciente sorrindo após tratamento na Orla Odontologia', recepcao: 'Recepção da Orla Odontologia', sala: 'Sala de atendimento com equipamentos digitais',
+  helena: 'Dra. Helena Vasconcelos', rafael: 'Dr. Rafael Moura', camila: 'Dra. Camila Araújo',
+  implante: 'Implante dentário', protocolo: 'Prótese protocolo sobre implantes', alinhador: 'Alinhador invisível transparente',
+  clareamento: 'Clareamento dental', lentes: 'Lentes de contato dental', consulta: 'Dentista conversando com paciente na avaliação'
+};
+const MES = { janeiro: 1, fevereiro: 2, 'março': 3, abril: 4, maio: 5, junho: 6, julho: 7, agosto: 8, setembro: 9, outubro: 10, novembro: 11, dezembro: 12 };
+const iso = (d) => { const [dia, , mes, , ano] = d.split(' '); return `${ano}-${String(MES[mes]).padStart(2, '0')}-${String(dia).padStart(2, '0')}`; };
+const limpo = (s) => String(s).replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+const abs = (p) => SITE + p;
+let FAQS = [], CRUMBS = [];
+const ldNegocio = () => ({ '@context': 'https://schema.org', '@type': NEGOCIO.tipo, '@id': abs('/#negocio'), name: NEGOCIO.nome, url: abs('/'), image: abs('/img/recepcao.webp'), telephone: NEGOCIO.telefone, priceRange: NEGOCIO.preco,
+  address: { '@type': 'PostalAddress', streetAddress: NEGOCIO.rua, addressLocality: NEGOCIO.cidade, addressRegion: NEGOCIO.uf, postalCode: NEGOCIO.cep, addressCountry: 'BR' },
+  geo: { '@type': 'GeoCoordinates', latitude: NEGOCIO.lat, longitude: NEGOCIO.lng }, areaServed: NEGOCIO.cidade,
+  openingHoursSpecification: NEGOCIO.horario.map(([d, o, c]) => ({ '@type': 'OpeningHoursSpecification', dayOfWeek: d, opens: o, closes: c })),
+  ...(NEGOCIO.redes.length ? { sameAs: NEGOCIO.redes } : {}) });
+const ldTag = (o) => `<script type='application/ld+json'>${JSON.stringify(o).replace(/</g, '\\u003c')}</script>`;
 const CDN = 'https://d8j0ntlcm91z4.cloudfront.net/user_3KLBcar2vQx7c9CKMkSdFRrDp3o/hf_20261111_';
 const IMGS = {
   hero: '000117_d52252bb-0c20-463b-ac36-4470733c915e',
@@ -87,24 +118,36 @@ const POSTS = [
 ];
 
 const wa = (m) => `https://wa.me/${WA}?text=${encodeURIComponent(m)}`;
-const img = (n, alt = '', extra = '') => `<img src='/img/${n}.webp' alt='${alt}' width='${TALL.includes(n) ? 880 : 1024}' height='${TALL.includes(n) ? 1168 : 688}' decoding='async' ${extra}>`;
+const img = (n, alt = '', extra = '') => `<img src='/img/${n}.webp' alt='${alt || ALT[n] || ''}' width='${TALL.includes(n) ? 880 : 1024}' height='${TALL.includes(n) ? 1168 : 688}' decoding='async' ${extra}>`;
 const btn = (href, txt, cls = '') => `<a class='btn ${cls}' href='${href}'${href.startsWith('http') ? ` target='_blank' rel='noopener'` : ''}><span>${txt}</span><i>↗</i></a>`;
 const LOGO = `<svg viewBox='0 0 40 40' aria-hidden='true'><circle cx='20' cy='20' r='20' fill='currentColor'/><path d='M8 19c4-3.4 8-3.4 12 0s8 3.4 12 0M8 26c4-3.4 8-3.4 12 0s8 3.4 12 0' stroke='#CFE6DC' stroke-width='2.4' fill='none' stroke-linecap='round'/></svg>`;
 const NAV = [['/', 'Início'], ['/tratamentos', 'Tratamentos'], ['/sobre', 'Sobre'], ['/blog', 'Blog'], ['/contato', 'Contato']];
 const WAICON = `<svg viewBox='0 0 24 24' fill='currentColor' aria-hidden='true'><path d='M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.4-.7-2.8-1.1-4.6-4-4.8-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.9 2.1c.1.2.1.4 0 .5l-.4.6-.4.4c-.1.2-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.4 2.4 1.5.3.1.5.1.6-.1l.9-1.1c.2-.3.4-.2.6-.1l2 1c.3.1.5.2.5.3.1.2.1.7-.1 1.3Z'/></svg>`;
 
-const layout = ({ title, desc, path, body }) => `<!doctype html>
+const layout = ({ title, desc, path, body, image = 'recepcao', type = 'website', ld = [] }) => {
+  const extra = [ldNegocio(), ...ld];
+  if (CRUMBS.length) extra.push({ '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: CRUMBS.map(([h, t], i) => ({ '@type': 'ListItem', position: i + 1, name: limpo(t), ...(h ? { item: abs(h === '/' ? '/' : h + '/') } : {}) })) });
+  if (FAQS.length) extra.push({ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: FAQS.map(([q, a]) => ({ '@type': 'Question', name: limpo(q), acceptedAnswer: { '@type': 'Answer', text: limpo(a) } })) });
+  FAQS = []; CRUMBS = [];
+  return `<!doctype html>
 <html lang='pt-BR'>
 <head>
 <meta charset='utf-8'>
 <meta name='viewport' content='width=device-width,initial-scale=1,viewport-fit=cover'>
 <title>${title}</title>
 <meta name='description' content='${desc}'>
-<meta name='robots' content='noindex'>
+<meta name='robots' content='${INDEXAR && path !== '/404' ? 'index,follow,max-image-preview:large' : 'noindex'}'>
+<link rel='canonical' href='%%URL%%'>
 <meta name='theme-color' content='#F4F3EF'>
 <meta property='og:title' content='${title}'>
 <meta property='og:description' content='${desc}'>
-<meta property='og:image' content='/img/recepcao.webp'>
+<meta property='og:image' content='${abs(`/img/${image}.webp`)}'>
+<meta property='og:url' content='%%URL%%'>
+<meta property='og:type' content='${type}'>
+<meta property='og:locale' content='pt_BR'>
+<meta property='og:site_name' content='${NEGOCIO.nome}'>
+<meta name='twitter:card' content='summary_large_image'>
+${extra.map(ldTag).join('\n')}
 <link rel='icon' href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Ccircle cx='20' cy='20' r='20' fill='%230E3531'/%3E%3Cpath d='M8 19c4-3.4 8-3.4 12 0s8 3.4 12 0M8 26c4-3.4 8-3.4 12 0s8 3.4 12 0' stroke='%23CFE6DC' stroke-width='2.4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
 <link rel='preconnect' href='https://fonts.googleapis.com'>
 <link rel='preconnect' href='https://fonts.gstatic.com' crossorigin>
@@ -135,17 +178,18 @@ ${btn('/contato', 'Agendar avaliação')}
 <script src='https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js'></script>
 <script src='/site.js'></script>
 </body></html>`;
+};
 
 const rise = (lines) => `<h1 class='rise'>${lines.map((l, i) => `<span><span style='--i:${i}'>${l}</span></span>`).join('')}</h1>`;
 const head = (tag, h2, right = '') => `<div class='head'><div><span class='tag plain' data-r>${tag}</span><h2 data-r>${h2}</h2></div>${right}</div>`;
-const faq = (items) => items.map(([q, a], i) => `<details${i === 0 ? ' open' : ''}><summary>${q}</summary><p>${a}</p></details>`).join('');
+const faq = (items) => (FAQS.push(...items), items).map(([q, a], i) => `<details${i === 0 ? ' open' : ''}><summary>${q}</summary><p>${a}</p></details>`).join('');
 const cta = (h2, p, msg) => `<section class='cta'><div class='wrap'><div class='cta-in' data-par='70' data-r>${img('consulta', '', `loading='lazy'`)}<div><h2>${h2}</h2><p>${p}</p><div class='hero-ctas'>${btn(wa(msg), 'Chamar no WhatsApp', 'light')}${btn('/contato', 'Ver horários e endereço', 'ghost')}</div></div></div></div></section>`;
 const tcard = (t, i) => `<a class='card' href='/tratamentos/${t.slug}' data-r style='--d:${(i % 3) * 0.1}s'><div class='media' style='view-transition-name:t-${t.slug}'>${img(t.img, t.nome, `loading='lazy'`)}<span class='go'>↗</span></div><h3>${t.nome}</h3><p>${t.curto}</p></a>`;
 const pcard = (p, i) => `<a class='card' href='/blog/${p.slug}' data-r style='--d:${(i % 3) * 0.1}s'><div class='media' style='view-transition-name:b-${p.slug}'>${img(p.img, '', `loading='lazy'`)}<span class='go'>↗</span></div><div class='meta'><span>${p.cat}</span><span>${p.data} · ${p.min} min</span></div><h3>${p.titulo}</h3><p>${p.resumo}</p></a>`;
 const team = () => `<div class='team'>${TEAM.map(([f, n, r, b], i) => `<article class='person' data-r style='--d:${i * 0.12}s'><div class='media'>${img(f, n, `loading='lazy'`)}</div><div><h3>${n}</h3><small>${r}</small></div><p>${b}</p></article>`).join('')}</div>`;
 const QUOTES = [['Passei quinze anos de dentadura e tinha vergonha de sorrir em foto. Fiz o protocolo com a Dra. Helena e na sexta já estava almoçando com a família.', 'Marlene S.', 'Prótese protocolo'], ['Usei alinhadores por oito meses e ninguém no trabalho percebeu. O Dr. Rafael mostrou no computador como ia ficar, e ficou exatamente assim.', 'Thiago R.', 'Alinhadores'], ['Tenho pavor de dentista e fiz o implante com sedação sem sentir nada. Recepção atenciosa, ambiente calmo e tudo explicado com clareza.', 'Fernanda L.', 'Implante']];
 const quotes = () => `<div class='quotes'>${QUOTES.map(([q, n, t], i) => `<figure class='quote' data-r style='--d:${i * 0.12}s'><div><div class='stars' aria-label='5 de 5 estrelas'>★★★★★</div><blockquote style='margin-top:18px'>${q}</blockquote></div><figcaption><span><b>${n}</b>Avaliação no Google</span><span>${t}</span></figcaption></figure>`).join('')}</div>`;
-const phero = (crumbs, h1, lead) => `<section class='phero'><div class='wrap'><nav class='crumbs fade' style='--d:.1s' aria-label='Você está em'>${crumbs.map(([h, t]) => (h ? `<a href='${h}'>${t}</a><span>/</span>` : `<span>${t}</span>`)).join('')}</nav>${rise(h1)}${lead ? `<p class='lead fade' style='--d:.55s'>${lead}</p>` : ''}</div></section>`;
+const phero = (crumbs, h1, lead) => (CRUMBS = crumbs, '') + `<section class='phero'><div class='wrap'><nav class='crumbs fade' style='--d:.1s' aria-label='Você está em'>${crumbs.map(([h, t]) => (h ? `<a href='${h}'>${t}</a><span>/</span>` : `<span>${t}</span>`)).join('')}</nav>${rise(h1)}${lead ? `<p class='lead fade' style='--d:.55s'>${lead}</p>` : ''}</div></section>`;
 
 const pages = {};
 
@@ -200,7 +244,7 @@ ${quotes()}
 
 ${cta('Vamos planejar o seu <em>sorriso?</em>', 'A avaliação é gratuita e inclui exame clínico, fotos e uma conversa sem pressa sobre as suas opções.', 'Olá! Gostaria de agendar uma avaliação na Orla Odontologia.')}` });
 
-pages['tratamentos/index.html'] = layout({ path: '/tratamentos', title: 'Tratamentos · Orla Odontologia', desc: 'Implantes, prótese protocolo, alinhadores invisíveis, clareamento, lentes de contato dental e prevenção.', body: `
+pages['tratamentos/index.html'] = layout({ path: '/tratamentos', title: 'Tratamentos odontológicos na Barra, Rio de Janeiro · Orla Odontologia', desc: 'Implantes, prótese protocolo, alinhadores invisíveis, clareamento, lentes de contato dental e prevenção.', body: `
 ${phero([['/', 'Início'], ['', 'Tratamentos']], ['Tratamentos para', 'cada fase do', 'seu <em>sorriso.</em>'], 'Especialistas de cada área no mesmo endereço. Escolha um tratamento para ver como funciona, quanto tempo leva e para quem é indicado.')}
 <section style='padding-top:clamp(20px,3vw,40px)'><div class='wrap'><div class='cards'>${T.map(tcard).join('')}</div></div></section>
 <section class='dark'><div class='wrap split'>
@@ -211,7 +255,7 @@ ${cta('Não sabe por onde <em>começar?</em>', 'Conte o que incomoda e a equipe 
 
 T.forEach((t, k) => {
   const others = T.filter((x) => x !== t).slice(k % 2, (k % 2) + 3);
-  pages[`tratamentos/${t.slug}/index.html`] = layout({ path: '/tratamentos', title: `${t.nome} · Orla Odontologia`, desc: t.curto, body: `
+  pages[`tratamentos/${t.slug}/index.html`] = layout({ path: '/tratamentos', title: `${t.nome} na Barra, Rio de Janeiro · Orla Odontologia`, desc: t.curto, image: t.img, ld: [{ '@context': 'https://schema.org', '@type': 'MedicalProcedure', name: t.nome, description: t.lead, url: abs(`/tratamentos/${t.slug}/`) }], body: `
 ${phero([['/', 'Início'], ['/tratamentos', 'Tratamentos'], ['', t.nome]], t.nome.split(' ').length > 2 ? [t.nome.split(' ').slice(0, -2).join(' '), `<em>${t.nome.split(' ').slice(-2).join(' ')}</em>`] : [t.nome.split(' ')[0], `<em>${t.nome.split(' ').slice(1).join(' ')}</em>`], t.lead)}
 <div class='wrap'>
 <div class='media banner' data-par='80' style='view-transition-name:t-${t.slug}'>${img(t.img, t.nome, `fetchpriority='high'`)}</div>
@@ -233,7 +277,7 @@ ${phero([['/', 'Início'], ['/tratamentos', 'Tratamentos'], ['', t.nome]], t.nom
 ${cta(`Vamos avaliar o seu <em>caso?</em>`, 'A primeira consulta é gratuita. Você sai com o diagnóstico e o plano de tratamento por escrito.', `Olá! Quero agendar uma avaliação de ${t.nome.toLowerCase()}.`)}` });
 });
 
-pages['sobre/index.html'] = layout({ path: '/sobre', title: 'Sobre · Orla Odontologia', desc: 'Conheça a história, a equipe e a estrutura da Orla Odontologia.', body: `
+pages['sobre/index.html'] = layout({ path: '/sobre', title: 'Sobre a clínica · Orla Odontologia, Barra, Rio de Janeiro', desc: 'Conheça a história, a equipe e a estrutura da Orla Odontologia.', body: `
 ${phero([['/', 'Início'], ['', 'Sobre']], ['Odontologia com', 'tempo para <em>ouvir.</em>'], 'A Orla nasceu em 2010 com uma regra simples: nenhum paciente começa um tratamento sem entender cada etapa e cada valor.')}
 <div class='wrap'><div class='two'><div class='media' data-r>${img('recepcao', 'Recepção')}</div><div class='media tall' data-r style='--d:.15s'>${img('sala', 'Sala de atendimento')}</div></div></div>
 <section><div class='wrap split'>
@@ -257,7 +301,7 @@ ${phero([['/', 'Início'], ['', 'Sobre']], ['Odontologia com', 'tempo para <em>o
 </ul></div></section>
 ${cta('Venha conhecer a <em>Orla.</em>', 'Agende uma visita ou uma avaliação gratuita. Será um prazer receber você.', 'Olá! Gostaria de conhecer a Orla Odontologia.')}` });
 
-pages['blog/index.html'] = layout({ path: '/blog', title: 'Blog · Orla Odontologia', desc: 'Artigos da equipe da Orla sobre implantes, alinhadores, clareamento e saúde bucal.', body: `
+pages['blog/index.html'] = layout({ path: '/blog', title: 'Blog de saúde bucal · Orla Odontologia', desc: 'Artigos da equipe da Orla sobre implantes, alinhadores, clareamento e saúde bucal.', body: `
 ${phero([['/', 'Início'], ['', 'Blog']], ['Para decidir com', '<em>informação.</em>'], 'Respostas diretas da nossa equipe para as dúvidas que mais ouvimos no consultório.')}
 <section style='padding-top:clamp(20px,3vw,40px)'><div class='wrap'>
 <a class='feature' href='/blog/${POSTS[0].slug}' data-r><div class='media' style='view-transition-name:b-${POSTS[0].slug}'>${img(POSTS[0].img, '')}</div><div><div class='card'><div class='meta'><span>${POSTS[0].cat}</span><span>${POSTS[0].data} · ${POSTS[0].min} min</span></div></div><h2>${POSTS[0].titulo}</h2><p class='muted'>${POSTS[0].resumo}</p><span class='link'>Ler artigo <span>↗</span></span></div></a>
@@ -266,7 +310,7 @@ ${phero([['/', 'Início'], ['', 'Blog']], ['Para decidir com', '<em>informação
 ${cta('Ficou com alguma <em>dúvida?</em>', 'Mande sua pergunta pelo WhatsApp. A equipe responde no mesmo dia, em horário comercial.', 'Olá! Tenho uma dúvida sobre um tratamento.')}` });
 
 POSTS.forEach((p) => {
-  pages[`blog/${p.slug}/index.html`] = layout({ path: '/blog', title: `${p.titulo} · Orla Odontologia`, desc: p.resumo, body: `
+  pages[`blog/${p.slug}/index.html`] = layout({ path: '/blog', title: `${p.titulo} · Orla Odontologia`, desc: p.resumo, image: p.img, type: 'article', ld: [{ '@context': 'https://schema.org', '@type': 'BlogPosting', headline: p.titulo, description: p.resumo, image: abs(`/img/${p.img}.webp`), datePublished: iso(p.data), dateModified: iso(p.data), inLanguage: 'pt-BR', mainEntityOfPage: abs(`/blog/${p.slug}/`), author: { '@type': 'Organization', name: 'Equipe Orla', url: abs('/sobre/') }, publisher: { '@id': abs('/#negocio') } }, { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [['/', 'Início'], ['/blog/', 'Blog'], [`/blog/${p.slug}/`, p.titulo]].map(([h, t], i) => ({ '@type': 'ListItem', position: i + 1, name: t, item: abs(h) })) }], body: `
 <section class='phero'><div class='wrap' style='max-width:980px'><nav class='crumbs fade' style='--d:.1s'><a href='/'>Início</a><span>/</span><a href='/blog'>Blog</a><span>/</span><span>${p.cat}</span></nav><h1 class='fade' style='--d:.2s;font-size:clamp(2.2rem,5.4vw,4.4rem);max-width:none'>${p.titulo}</h1><p class='muted fade' style='--d:.4s'>${p.data} · ${p.min} min de leitura · Equipe Orla</p></div></section>
 <div class='wrap'><div class='media banner' data-par='80' style='view-transition-name:b-${p.slug}'>${img(p.img, '', `fetchpriority='high'`)}</div></div>
 <section><div class='wrap'><article class='prose'><p class='lead' style='max-width:none;color:var(--ink)'>${p.resumo}</p>${p.corpo.map(([k, x]) => (k === 'h' ? `<h2 data-r>${x}</h2>` : k === 'n' ? `<p class='note' data-r>${x}</p>` : `<p data-r>${x}</p>`)).join('')}<p data-r>${btn('/contato', 'Agendar avaliação gratuita')}</p></article></div></section>
@@ -314,10 +358,15 @@ for (const [name, id] of Object.entries(IMGS)) {
   }
   await sharp(src).webp({ quality: 82 }).toFile(`${OUT}/img/${name}.webp`);
 }
+const urlDe = (file) => '/' + file.replace(/index\.html$/, '');
+const hoje = new Date().toISOString().slice(0, 10);
+const urls = Object.keys(pages).filter((f) => f !== '404.html').map(urlDe);
+await fs.writeFile(`${OUT}/sitemap.xml`, `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map((u) => `<url><loc>${abs(u)}</loc><lastmod>${hoje}</lastmod></url>`).join('\n')}\n</urlset>\n`);
+await fs.writeFile(`${OUT}/robots.txt`, `User-agent: *\nAllow: /\n\nSitemap: ${abs('/sitemap.xml')}\n`);
 for (const [file, html] of Object.entries(pages)) {
   const dir = `${OUT}/${file}`.split('/').slice(0, -1).join('/');
   await fs.mkdir(dir, { recursive: true });
-  await fs.writeFile(`${OUT}/${file}`, html);
+  await fs.writeFile(`${OUT}/${file}`, html.replaceAll('%%URL%%', abs(urlDe(file))));
 }
 await fs.copyFile('site.css', `${OUT}/site.css`);
 await fs.copyFile('site.js', `${OUT}/site.js`);
