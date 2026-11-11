@@ -177,14 +177,6 @@ ${rise(['O sorriso que', 'você <em>adiou,</em>', 'do jeito que', 'você <em>mer
 </div>
 </div></section>
 
-<section style='padding-top:0'><div class='wrap'>
-${head('Tratamentos', 'Do primeiro implante ao sorriso <em>completo.</em>', `<a class='link' href='/tratamentos' data-r>Todos os tratamentos <span>↗</span></a>`)}
-<div class='stack'>${T.slice(0, 4).map((t, i) => `<article class='stack-card' style='--i:${i}'><div class='stack-in' style='--bg:${t.bg};--fg:${t.fg}'>
-<div class='stack-copy'><div><span class='n'>0${i + 1} / 04</span><h3>${t.nome}</h3><p>${t.lead}</p><div class='chips'>${t.fatos.map(([a, b]) => `<span>${b}</span>`).join('')}</div></div>${btn(`/tratamentos/${t.slug}`, 'Conhecer o tratamento', t.fg === '#F4F3EF' ? 'light' : '')}</div>
-<a class='stack-img' href='/tratamentos/${t.slug}' tabindex='-1' aria-hidden='true' style='view-transition-name:t-${t.slug}'>${img(t.img, '', `loading='lazy'`)}</a>
-</div></article>`).join('')}</div>
-</div></section>
-
 <section class='expand'><div class='expand-sticky'>
 <div class='expand-media'>${img('recepcao', 'Recepção da clínica', `loading='lazy'`)}</div>
 <div class='expand-copy'><h2>Um lugar para esquecer que você está <em>no dentista.</em></h2><p>Luz natural, vista para o mar e salas silenciosas. Tomografia, escaneamento e laboratório digital ficam aqui mesmo.</p>${btn('/sobre', 'Conhecer a clínica', 'light')}</div>
@@ -200,25 +192,22 @@ ${head('Por que a Orla', 'Tecnologia de ponta, <em>conversa</em> sem pressa.')}
 </ul>
 </div></section>
 
-<section style='padding-top:0'><div class='wrap'>
-${head('Equipe', 'Quem cuida do seu <em>sorriso.</em>', `<a class='link' href='/sobre' data-r>Sobre a clínica <span>↗</span></a>`)}
-${team()}
-</div></section>
 
 <section class='dark'><div class='wrap'>
 ${head('Depoimentos', 'Histórias que começaram com uma <em>avaliação.</em>')}
 ${quotes()}
 </div></section>
 
-<section><div class='wrap'>
-${head('Blog', 'Para decidir com <em>informação.</em>', `<a class='link' href='/blog' data-r>Todos os artigos <span>↗</span></a>`)}
-<div class='cards'>${POSTS.map(pcard).join('')}</div>
-</div></section>
 ${cta('Vamos planejar o seu <em>sorriso?</em>', 'A avaliação é gratuita e inclui exame clínico, fotos e uma conversa sem pressa sobre as suas opções.', 'Olá! Gostaria de agendar uma avaliação na Orla Odontologia.')}` });
 
 pages['tratamentos/index.html'] = layout({ path: '/tratamentos', title: 'Tratamentos · Orla Odontologia', desc: 'Implantes, prótese protocolo, alinhadores invisíveis, clareamento, lentes de contato dental e prevenção.', body: `
 ${phero([['/', 'Início'], ['', 'Tratamentos']], ['Tratamentos para', 'cada fase do', 'seu <em>sorriso.</em>'], 'Especialistas de cada área no mesmo endereço. Escolha um tratamento para ver como funciona, quanto tempo leva e para quem é indicado.')}
-<section style='padding-top:clamp(20px,3vw,40px)'><div class='wrap'><div class='cards'>${T.map(tcard).join('')}</div></div></section>
+<section style='padding-top:clamp(20px,3vw,40px)'><div class='wrap'>
+<div class='stack'>${T.map((t, i) => `<article class='stack-card' style='--i:${i}'><div class='stack-in' style='--bg:${t.bg};--fg:${t.fg}'>
+<div class='stack-copy'><div><span class='n'>0${i + 1} / 0${T.length}</span><h3>${t.nome}</h3><p>${t.lead}</p><div class='chips'>${t.fatos.map(([a, b]) => `<span>${b}</span>`).join('')}</div></div>${btn(`/tratamentos/${t.slug}`, 'Conhecer o tratamento', t.fg === '#F4F3EF' ? 'light' : '')}</div>
+<a class='stack-img' href='/tratamentos/${t.slug}' tabindex='-1' aria-hidden='true' style='view-transition-name:t-${t.slug}'>${img(t.img, '', `loading='lazy'`)}</a>
+</div></article>`).join('')}
+</div></section>
 <section class='dark'><div class='wrap split'>
 <div><span class='tag plain' data-r style='background:transparent;border-color:rgba(255,255,255,.25)'>Como funciona</span><h2 data-r>Da primeira conversa ao <em>resultado.</em></h2><p class='lead' data-r>O caminho é o mesmo em qualquer tratamento, e você sabe em que etapa está o tempo todo.</p></div>
 <ol class='steps'>${[['Avaliação gratuita', 'Exame clínico, fotos e conversa sobre o que você quer mudar.'], ['Diagnóstico digital', 'Tomografia e escaneamento 3D, quando o caso pede.'], ['Plano por escrito', 'Etapas, prazos e valores definidos antes de começar.'], ['Tratamento e acompanhamento', 'Você é atendido pelo especialista da área e volta para revisões programadas.']].map(([a, b], i) => `<li data-r><span class='n'>0${i + 1}</span><div><h3>${a}</h3><p>${b}</p></div></li>`).join('')}</ol>
