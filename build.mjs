@@ -202,12 +202,7 @@ ${cta('Vamos planejar o seu <em>sorriso?</em>', 'A avaliação é gratuita e inc
 
 pages['tratamentos/index.html'] = layout({ path: '/tratamentos', title: 'Tratamentos · Orla Odontologia', desc: 'Implantes, prótese protocolo, alinhadores invisíveis, clareamento, lentes de contato dental e prevenção.', body: `
 ${phero([['/', 'Início'], ['', 'Tratamentos']], ['Tratamentos para', 'cada fase do', 'seu <em>sorriso.</em>'], 'Especialistas de cada área no mesmo endereço. Escolha um tratamento para ver como funciona, quanto tempo leva e para quem é indicado.')}
-<section style='padding-top:clamp(20px,3vw,40px)'><div class='wrap'>
-<div class='stack'>${T.map((t, i) => `<article class='stack-card' style='--i:${i}'><div class='stack-in' style='--bg:${t.bg};--fg:${t.fg}'>
-<div class='stack-copy'><div><span class='n'>0${i + 1} / 0${T.length}</span><h3>${t.nome}</h3><p>${t.lead}</p><div class='chips'>${t.fatos.map(([a, b]) => `<span>${b}</span>`).join('')}</div></div>${btn(`/tratamentos/${t.slug}`, 'Conhecer o tratamento', t.fg === '#F4F3EF' ? 'light' : '')}</div>
-<a class='stack-img' href='/tratamentos/${t.slug}' tabindex='-1' aria-hidden='true' style='view-transition-name:t-${t.slug}'>${img(t.img, '', `loading='lazy'`)}</a>
-</div></article>`).join('')}
-</div></section>
+<section style='padding-top:clamp(20px,3vw,40px)'><div class='wrap'><div class='cards'>${T.map(tcard).join('')}</div></div></section>
 <section class='dark'><div class='wrap split'>
 <div><span class='tag plain' data-r style='background:transparent;border-color:rgba(255,255,255,.25)'>Como funciona</span><h2 data-r>Da primeira conversa ao <em>resultado.</em></h2><p class='lead' data-r>O caminho é o mesmo em qualquer tratamento, e você sabe em que etapa está o tempo todo.</p></div>
 <ol class='steps'>${[['Avaliação gratuita', 'Exame clínico, fotos e conversa sobre o que você quer mudar.'], ['Diagnóstico digital', 'Tomografia e escaneamento 3D, quando o caso pede.'], ['Plano por escrito', 'Etapas, prazos e valores definidos antes de começar.'], ['Tratamento e acompanhamento', 'Você é atendido pelo especialista da área e volta para revisões programadas.']].map(([a, b], i) => `<li data-r><span class='n'>0${i + 1}</span><div><h3>${a}</h3><p>${b}</p></div></li>`).join('')}</ol>
